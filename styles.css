@@ -79,3 +79,47 @@
 }
 @media(prefers-reduced-motion:reduce){.blueprint-grid::before{transform:none}.scroll-progress{display:none}.bim-projects .project-visual::after{display:none}}
 @media(max-width:700px){.section-sketch{width:220px;margin-top:16px}}
+
+/* Additional portfolio motion: progressive enhancement, never hides static content. */
+@media (prefers-reduced-motion:no-preference) {
+  html {scroll-behavior:smooth}
+  @keyframes portrait-arrive {
+    from {opacity:0;clip-path:inset(8% 4% 8% 4% round 20px);transform:translateY(20px) rotate(1.5deg)}
+    to {opacity:1;clip-path:inset(0 round 6px);transform:translateY(0) rotate(0)}
+  }
+  @keyframes title-arrive {
+    from {opacity:0;transform:translateY(24px);clip-path:inset(0 0 100% 0)}
+    to {opacity:1;transform:translateY(0);clip-path:inset(0)}
+  }
+  @keyframes blueprint-arrive {
+    from {opacity:0;transform:scale(1.035)}
+    to {opacity:1;transform:scale(1)}
+  }
+  .hero-portrait img {animation:portrait-arrive 1000ms 140ms cubic-bezier(.22,1,.36,1) both}
+  .hero-copy h1 {animation:title-arrive 900ms 120ms cubic-bezier(.22,1,.36,1) both}
+  .blueprint-grid {animation:blueprint-arrive 1400ms ease-out both}
+  .section-heading {position:relative}
+  .section-heading::after {content:"";position:absolute;bottom:0;left:0;width:56px;height:2px;background:#6d922d;transform-origin:left;transition:width 350ms ease}
+  .section-heading:hover::after {width:100px}
+  .career-row {position:relative}
+  .career-row::before {content:"";position:absolute;left:0;top:-1px;height:2px;width:100%;background:#6d922d;transform:scaleX(0);transform-origin:left;transition:transform 600ms cubic-bezier(.22,1,.36,1);pointer-events:none}
+  .career-row:hover::before,.career-row:focus-within::before {transform:scaleX(1)}
+  .skill-chips>span {transition:background-color 200ms ease,border-color 200ms ease}
+  .automation-card {position:relative;overflow:hidden}
+  .automation-card::before {content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:#6d922d;transform:scaleX(0);transform-origin:left;transition:transform 350ms ease;pointer-events:none}
+  .automation-card:hover::before {transform:scaleX(1)}
+  .contact-links>a {transition:padding-left 220ms ease}
+  .contact-links>a:focus-visible {padding-left:8px}
+  .close-dialog {transition:transform 200ms ease,background-color 200ms ease}
+  @media(hover:hover) and (pointer:fine) {
+    .hero-portrait img {transition:filter 400ms ease}
+    .hero-portrait:hover img {filter:contrast(1.04)}
+    .automation-card:hover .skill-chips>span {background:#cefa5b35;border-color:#879d6c}
+    .contact-links>a:hover {padding-left:8px}
+    .close-dialog:hover {transform:rotate(-3deg)}
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  html {scroll-behavior:auto}
+  .hero-portrait img,.hero-copy h1,.blueprint-grid {animation:none}
+}
