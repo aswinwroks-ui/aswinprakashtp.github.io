@@ -144,7 +144,22 @@ if(!motionPreference.matches && 'IntersectionObserver' in window) {
       if(!isIntersecting)return;
       revealObserver.unobserve(target);
       if(target.contains(document.activeElement))return;
-      animateElement(target,[{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'translateY(0)'}]);
+      const siblings=[...target.parentElement.children].filter(item=>item.matches('.project,.automation-card,.career-row,.skills-grid article'));
+      const delay=Math.max(0,siblings.indexOf(target)%3)*85;
+      const isCard=target.matches('.project,.automation-card');
+      animateElement(target,[
+        {opacity:0,transform:isCard?'translateY(32px) scale(.97)':'translateY(24px)'},
+        {opacity:1,transform:'translateY(0) scale(1)'}
+      ],{duration:650,delay});
+      if(target.matches('.section-heading')){
+        const heading=target.querySelector('h2');
+        if(heading)animateElement(heading,[{clipPath:'inset(0 100% 0 0)',transform:'translateY(8px)'},{clipPath:'inset(0 0 0 0)',transform:'translateY(0)'}],{duration:700});
+      }
+      if(target.matches('.career-row')){
+        target.querySelectorAll('.career-date,.career-role,.career-description').forEach((item,index)=>{
+          animateElement(item,[{opacity:0,transform:'translateX(-12px)'},{opacity:1,transform:'translateX(0)'}],{duration:500,delay:delay+index*90});
+        });
+      }
     });
   },{threshold:0.08});
   document.querySelectorAll('.section-heading,.bim-projects>.project,.automation-card,.about-intro,.profile-facts,.career-row,.skills-grid article,.training,.contact').forEach(element=>revealObserver.observe(element));
@@ -166,6 +181,7 @@ let returnFocus;
 let dialogMotion;
 let contentMotion;
 let closing=false;
+let caseAnimations=[];
 function showProject(key){
   const project=projects[key];
   if(!project || closing)return;
@@ -183,8 +199,13 @@ function showProject(key){
   document.querySelector('.close-dialog').focus();
   dialogMotion?.cancel();
   contentMotion?.cancel();
+  caseAnimations.forEach(animation=>animation?.cancel());
+  caseAnimations=[];
   if(!wasOpen)dialogMotion=animateElement(dialog,[{opacity:0,transform:'translateY(12px) scale(.985)'},{opacity:1,transform:'translateY(0) scale(1)'}],{duration:260});
   else contentMotion=animateElement(document.querySelector('.case-content'),[{opacity:.3,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:220});
+  document.querySelectorAll('#case-title,#case-summary,#case-visual,.case-sections>div').forEach((item,index)=>{
+    caseAnimations.push(animateElement(item,[{opacity:0,transform:'translateY(18px)'},{opacity:1,transform:'translateY(0)'}],{duration:480,delay:80+index*65}));
+  });
 }
 async function closeProject(){
   if(closing || !dialog.open)return;
